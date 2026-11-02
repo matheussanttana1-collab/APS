@@ -1,0 +1,6 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/APS.Core/APS.Core.csproj" />
+    <Project Path="src/APS.UI/APS.UI.csproj" />
+  </Folder>
+</Solution>

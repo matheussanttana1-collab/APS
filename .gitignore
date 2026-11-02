@@ -1,0 +1,26 @@
+# Build results
+[Bb]in/
+[Oo]bj/
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+
+# Visual Studio
+.vs/
+*.user
+*.suo
+
+# Rider
+.idea/
+
+# VS Code
+.vscode/
+
+# NuGet
+*.nupkg
+**/packages/*
+
+# Relatórios gerados em runtime (não versionar saídas de exemplo)
+docs/*.xlsx
+!docs/.gitkeep
