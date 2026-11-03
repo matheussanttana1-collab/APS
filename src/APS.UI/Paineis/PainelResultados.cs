@@ -21,8 +21,10 @@ public class PainelResultados : UserControl
     private Panel _slotFiltro = null!;
     private Button _btnExportar = null!;
 
+    private readonly GrupoSegmentado _seletorEscala = new();
     private DataGridView _dgvResultados = null!;
     private Chart _chart = null!;
+    private ChartArea _areaGrafico = null!;
     private FlowLayoutPanel _painelRanking = null!;
     private Label _lblRankingSubtitulo = null!;
 
@@ -144,28 +146,38 @@ public class PainelResultados : UserControl
         var card = Tema.Cartao();
         card.Dock = DockStyle.Fill;
 
-        var cabecalho = new Panel { Dock = DockStyle.Top, Height = 40, Padding = new Padding(18, 14, 18, 0), BackColor = Color.Transparent };
+        var cabecalho = new Panel { Dock = DockStyle.Top, Height = 40, Padding = new Padding(18, 10, 18, 0), BackColor = Color.Transparent };
         var titulo = new Label
         {
             Text = "Tempo médio × tamanho do vetor", Font = Tema.FonteSubtitulo, ForeColor = Tema.Texto,
             AutoSize = true, Location = new Point(18, 14), BackColor = Color.Transparent
         };
+
+        // Bubble Sort é O(n²) e os demais O(n log n): numa escala linear, a curva
+        // do Bubble "esmaga" as outras três lá embaixo, perto de zero. Log resolve
+        // isso mostrando todo mundo na sua própria escala — por isso é o padrão.
+        var seletorEscala = _seletorEscala.Construir(new[] { "Log", "Linear" });
+        seletorEscala.Dock = DockStyle.Right;
+        _seletorEscala.Mudou += _ => AtualizarGrafico();
+
         cabecalho.Controls.Add(titulo);
+        cabecalho.Controls.Add(seletorEscala);
 
         var areaChart = new Panel { Dock = DockStyle.Fill, Padding = new Padding(10, 0, 10, 10), BackColor = Color.Transparent };
         // Chart lança ArgumentException se for redimensionado para 0px durante os
         // layouts intermediários da construção (antes do form ter seu tamanho
         // final) — MinimumSize evita que isso aconteça.
         _chart = new Chart { Dock = DockStyle.Fill, BackColor = Tema.Superficie, MinimumSize = new Size(100, 100) };
-        var area = new ChartArea("Area")
+        _areaGrafico = new ChartArea("Area")
         {
             BackColor = Tema.Superficie,
             AxisX = { LineColor = Tema.Borda, MajorGrid = { LineColor = Tema.Borda }, LabelStyle = { ForeColor = Tema.TextoSecundario }, TitleForeColor = Tema.TextoSecundario },
             AxisY = { LineColor = Tema.Borda, MajorGrid = { LineColor = Tema.Borda }, LabelStyle = { ForeColor = Tema.TextoSecundario }, TitleForeColor = Tema.TextoSecundario }
         };
-        area.AxisX.Title = "Tamanho da entrada";
-        area.AxisY.Title = "Tempo médio (ms)";
-        _chart.ChartAreas.Add(area);
+        _areaGrafico.AxisX.Title = "Tamanho da entrada";
+        _areaGrafico.AxisY.Title = "Tempo médio (ms)";
+        _areaGrafico.AxisY.IsLogarithmic = true;
+        _chart.ChartAreas.Add(_areaGrafico);
         _chart.Legends.Add(new Legend("Legenda") { BackColor = Color.Transparent, ForeColor = Tema.TextoSecundario, Docking = Docking.Top, Alignment = StringAlignment.Far });
         areaChart.Controls.Add(_chart);
 
@@ -176,6 +188,11 @@ public class PainelResultados : UserControl
 
     private void AtualizarGrafico()
     {
+        // Bubble é O(n²), os outros três são O(n log n): numa escala linear a
+        // curva do Bubble esmaga as demais lá embaixo perto de zero — por isso
+        // Log é o padrão (cada algoritmo fica visível na sua própria escala).
+        _areaGrafico.AxisY.IsLogarithmic = _seletorEscala.Selecionado == 0;
+
         _chart.Series.Clear();
         var linha = _execucoes.Where(r => r.TipoDistribuicao == _distribuicaoAtiva).ToList();
         if (linha.Count == 0) return;
@@ -194,8 +211,10 @@ public class PainelResultados : UserControl
                 .Select(g => (Tamanho: g.Key, TempoMedio: g.Average(r => r.TempoMs)))
                 .OrderBy(p => p.Tamanho);
 
+            // Escala log não aceita 0 — um tempo médio arredondado pra baixo vira
+            // um valor positivo minúsculo, sem distorcer o que é visto na prática.
             foreach (var ponto in pontos)
-                serie.Points.AddXY(ponto.Tamanho, ponto.TempoMedio);
+                serie.Points.AddXY(ponto.Tamanho, Math.Max(ponto.TempoMedio, 0.001));
 
             _chart.Series.Add(serie);
         }

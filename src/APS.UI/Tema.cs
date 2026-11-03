@@ -71,13 +71,16 @@ public static class Tema
         BackColor = Color.Transparent
     };
 
+    // AutoSize com MaximumSize.Width (e Height=0, "sem limite") deixa o rótulo
+    // quebrar linha dentro da largura dada e crescer em altura conforme o texto —
+    // ao contrário de Size fixo, nunca corta o fim do texto.
     public static Label Descricao(string texto, int largura) => new()
     {
         Text = texto,
         Font = FonteCorpo,
         ForeColor = TextoSecundario,
-        AutoSize = false,
-        Size = new Size(largura, 36),
+        AutoSize = true,
+        MaximumSize = new Size(largura, 0),
         BackColor = Color.Transparent
     };
 

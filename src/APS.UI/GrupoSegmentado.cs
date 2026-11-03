@@ -12,7 +12,12 @@ public sealed class GrupoSegmentado
     public int Selecionado { get; private set; }
     public event Action<int>? Mudou;
 
-    public FlowLayoutPanel Construir(IReadOnlyList<string> opcoes, int indiceInicial = 0)
+    /// <param name="larguraMaxima">
+    /// Largura além da qual os chips quebram para a linha de baixo. Sem isso, um
+    /// FlowLayoutPanel com AutoSize cresce para caber tudo numa linha só e o
+    /// WrapContents nunca entra em ação — é o que limita a quebra de linha.
+    /// </param>
+    public FlowLayoutPanel Construir(IReadOnlyList<string> opcoes, int indiceInicial = 0, int larguraMaxima = 0)
     {
         Selecionado = indiceInicial;
         var painel = new FlowLayoutPanel
@@ -23,6 +28,8 @@ public sealed class GrupoSegmentado
             WrapContents = true,
             BackColor = Color.Transparent
         };
+        if (larguraMaxima > 0)
+            painel.MaximumSize = new Size(larguraMaxima, 0);
 
         for (int i = 0; i < opcoes.Count; i++)
         {

@@ -18,10 +18,10 @@ public class PainelExecucao : UserControl
 
     private static readonly (IAlgoritmoOrdenacao Algoritmo, string Complexidade, string Descricao, Color Cor)[] InfoAlgoritmos =
     {
-        (new BubbleSort(), "O(n²)", "Troca vizinhos repetidamente; referência de pior caso.", Tema.CorBubble),
-        (new QuickSort(), "O(n log n) médio", "Particiona com pivô aleatório; rápido na prática.", Tema.CorQuick),
-        (new HeapSort(), "O(n log n)", "Heap máximo; tempo estável em qualquer cenário.", Tema.CorHeap),
-        (new ShellSort(), "≈ O(n^1,3)", "Inserção com saltos (gaps) decrescentes.", Tema.CorShell),
+        (new BubbleSort(), "O(n²)", "Troca vizinhos repetidamente.", Tema.CorBubble),
+        (new QuickSort(), "O(n log n) médio", "Particiona com pivô aleatório.", Tema.CorQuick),
+        (new HeapSort(), "O(n log n)", "Heap máximo; sempre estável.", Tema.CorHeap),
+        (new ShellSort(), "≈ O(n^1,3)", "Inserção com saltos (gaps).", Tema.CorShell),
     };
 
     private static readonly int[] TamanhosDisponiveis = { 1_000, 5_000, 10_000, 50_000 };
@@ -115,9 +115,9 @@ public class PainelExecucao : UserControl
     {
         var tabela = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 1, BackColor = Tema.Fundo, AutoSize = false };
         tabela.RowStyles.Add(new RowStyle(SizeType.Absolute, 116));
-        tabela.RowStyles.Add(new RowStyle(SizeType.Absolute, 246));
+        tabela.RowStyles.Add(new RowStyle(SizeType.Absolute, 256));
         tabela.RowStyles.Add(new RowStyle(SizeType.Absolute, 120));
-        tabela.RowStyles.Add(new RowStyle(SizeType.Absolute, 90));
+        tabela.RowStyles.Add(new RowStyle(SizeType.Absolute, 150));
         tabela.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
 
         var secUnico = CriarSecaoExecucaoUnica();
@@ -146,7 +146,7 @@ public class PainelExecucao : UserControl
 
         _lblDatasetAtual = new Label
         {
-            Location = new Point(18, 34), Size = new Size(560, 36),
+            Location = new Point(18, 34), AutoSize = true, MaximumSize = new Size(700, 0),
             Font = Tema.FonteCorpo, ForeColor = Tema.TextoSecundario, BackColor = Color.Transparent
         };
 
@@ -168,7 +168,7 @@ public class PainelExecucao : UserControl
         lbl.Location = new Point(0, 0);
         p.Controls.Add(lbl);
 
-        int largura = 154, altura = 92, espaco = 10;
+        int largura = 160, altura = 96, espaco = 10;
         for (int i = 0; i < InfoAlgoritmos.Length; i++)
         {
             int coluna = i % 2, linha = i / 2;
@@ -200,12 +200,12 @@ public class PainelExecucao : UserControl
         var lblDescricao = new Label
         {
             Text = info.Descricao, Font = Tema.FonteRotulo, ForeColor = Tema.TextoSecundario,
-            Location = new Point(14, 46), Size = new Size(128, 28), BackColor = Color.Transparent
+            AutoSize = true, MaximumSize = new Size(132, 0), Location = new Point(14, 46), BackColor = Color.Transparent
         };
         var lblComplexidade = new Label
         {
             Text = info.Complexidade, Font = Tema.FonteRotulo, ForeColor = info.Cor,
-            AutoSize = true, Location = new Point(14, 72), BackColor = Color.Transparent
+            AutoSize = true, MaximumSize = new Size(132, 0), Location = new Point(14, 76), BackColor = Color.Transparent
         };
 
         card.Controls.AddRange(new Control[] { linha, lblNome, lblCheck, lblDescricao, lblComplexidade });
@@ -263,11 +263,17 @@ public class PainelExecucao : UserControl
 
     private Panel CriarSecaoDistribuicaoRepeticoes()
     {
+        // Empilhado (não lado a lado): com 4 chips de distribuição, uma divisão
+        // lado a lado nunca sobra largura suficiente para "Semi-ordenado" sem cortar.
         var p = new Panel { BackColor = Color.Transparent };
 
         var lblDist = Tema.Rotulo("Distribuições");
         lblDist.Location = new Point(0, 0);
-        var linhaChips = new FlowLayoutPanel { Location = new Point(0, 24), Size = new Size(430, 36), BackColor = Color.Transparent, WrapContents = false };
+        var linhaChips = new FlowLayoutPanel
+        {
+            Location = new Point(0, 24), MaximumSize = new Size(700, 0), AutoSize = true,
+            AutoSizeMode = AutoSizeMode.GrowAndShrink, WrapContents = true, BackColor = Color.Transparent
+        };
         foreach (var tipo in Enum.GetValues<TipoDistribuicao>())
         {
             var (chip, selecionado) = CriarChipMultiplo(NomeDistribuicao(tipo));
@@ -276,9 +282,9 @@ public class PainelExecucao : UserControl
         }
 
         var lblRep = Tema.Rotulo("Repetições");
-        lblRep.Location = new Point(450, 0);
-        var seletorRep = _seletorRepeticoes.Construir(new[] { "1×", "3×", "5×", "10×" }, indiceInicial: 1);
-        seletorRep.Location = new Point(450, 24);
+        lblRep.Location = new Point(0, 66);
+        var seletorRep = _seletorRepeticoes.Construir(new[] { "1×", "3×", "5×", "10×" }, indiceInicial: 1, larguraMaxima: 700);
+        seletorRep.Location = new Point(0, 90);
 
         p.Controls.Add(lblDist);
         p.Controls.Add(linhaChips);

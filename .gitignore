@@ -24,3 +24,6 @@ x86/
 # Relatórios gerados em runtime (não versionar saídas de exemplo)
 docs/*.xlsx
 !docs/.gitkeep
+
+# Build publicado (self-contained) para distribuir aos colegas — grande, gerado sob demanda
+publish/

@@ -65,7 +65,7 @@ public class PainelDados : UserControl
             760);
         descricao.Location = new Point(32, 82);
 
-        var seletor = _seletorFonte.Construir(new[] { "Gerar aleatório", "Digitar", "Arquivo .txt/.csv", "Planilha .xlsx" });
+        var seletor = _seletorFonte.Construir(new[] { "Gerar aleatório", "Digitar", "Arquivo .txt/.csv", "Planilha .xlsx" }, larguraMaxima: 820);
         seletor.Location = new Point(32, 118);
 
         header.Controls.Add(eyebrow);
@@ -114,7 +114,7 @@ public class PainelDados : UserControl
         var lblCampo = Tema.Rotulo("Campo de ordenação");
         lblCampo.Location = new Point(20, 268);
 
-        var seletorCampo = _seletorCampo.Construir(new[] { "Id", "Data", "Tamanho", "Índice" }, indiceInicial: 3);
+        var seletorCampo = _seletorCampo.Construir(new[] { "Id", "Data", "Tamanho", "Índice" }, indiceInicial: 3, larguraMaxima: 320);
         seletorCampo.Location = new Point(20, 288);
 
         _lblToast = new Label
@@ -194,7 +194,7 @@ public class PainelDados : UserControl
 
         var lblDist = Tema.Rotulo("Distribuição");
         lblDist.Location = new Point(0, 58);
-        var seletorDist = _seletorDistribuicao.Construir(new[] { "Aleatório", "Ordenado", "Invertido", "Semi-ordenado" });
+        var seletorDist = _seletorDistribuicao.Construir(new[] { "Aleatório", "Ordenado", "Invertido", "Semi-ordenado" }, larguraMaxima: 320);
         seletorDist.Location = new Point(0, 78);
 
         var btnGerar = Tema.BotaoPrimario("Gerar registros");
@@ -275,7 +275,7 @@ public class PainelDados : UserControl
 
         var (zona, abrirDialogo) = CriarZonaArquivo(
             "Arraste um arquivo .txt/.csv",
-            "Um valor por linha, ou separados por vírgula. Vira o Índice de Alerta do catálogo.",
+            "Um valor por linha. Vira o Índice de Alerta.",
             "Arquivos de texto (*.txt;*.csv)|*.txt;*.csv|Todos os arquivos (*.*)|*.*",
             caminho =>
             {
@@ -318,7 +318,7 @@ public class PainelDados : UserControl
 
         var (zona, abrirDialogo) = CriarZonaArquivo(
             "Arraste uma planilha .xlsx",
-            "Colunas: Id, CodigoSatelite, DataHoraCaptura, Uf, Latitude, Longitude, AreaKm2, TamanhoArquivoMB, IndiceAlerta.",
+            "Use \"Gerar modelo\" abaixo para ver as colunas certas.",
             "Planilhas Excel (*.xlsx)|*.xlsx",
             caminho =>
             {
@@ -377,12 +377,12 @@ public class PainelDados : UserControl
         var lblTexto = new Label
         {
             Text = textoPrincipal, Font = Tema.FonteCorpoNegrito, ForeColor = Tema.Texto,
-            AutoSize = false, Size = new Size(284, 20), Location = new Point(16, 30), BackColor = Color.Transparent
+            AutoSize = true, MaximumSize = new Size(284, 0), Location = new Point(16, 30), BackColor = Color.Transparent
         };
         var lblDica = new Label
         {
             Text = dica, Font = Tema.FonteRotulo, ForeColor = Tema.TextoSecundario,
-            AutoSize = false, Size = new Size(284, 46), Location = new Point(16, 52), BackColor = Color.Transparent
+            AutoSize = true, MaximumSize = new Size(284, 0), Location = new Point(16, 54), BackColor = Color.Transparent
         };
 
         zona.Controls.Add(lblTexto);

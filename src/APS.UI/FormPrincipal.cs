@@ -115,7 +115,8 @@ public class FormPrincipal : Form
             Font = Tema.FonteSubtitulo,
             ForeColor = Tema.Texto,
             Location = new Point(20, 44),
-            Size = new Size(232, 56),
+            AutoSize = true,
+            MaximumSize = new Size(232, 0),
             BackColor = Color.Transparent
         };
 
@@ -126,7 +127,7 @@ public class FormPrincipal : Form
             ("Resultados", "Aguardando execução")
         };
 
-        int y = 116;
+        int y = titulo.Bottom + 20;
         for (int i = 0; i < etapas.Length; i++)
         {
             int indiceCapturado = i;
@@ -138,7 +139,7 @@ public class FormPrincipal : Form
         }
 
         var cardConjunto = Tema.Cartao();
-        cardConjunto.Size = new Size(232, 112);
+        cardConjunto.Size = new Size(232, 128);
         cardConjunto.Location = new Point(20, y + 20);
 
         var eyebrowConjunto = Tema.Eyebrow("Conjunto atual");
@@ -155,11 +156,16 @@ public class FormPrincipal : Form
             AutoSize = true, Location = new Point(14, 68), BackColor = Color.Transparent
         };
         lblOrigem = CriarTag("—");
-        lblOrigem.Location = new Point(14, 86);
         lblDistribuicao = CriarTag("—");
-        lblDistribuicao.Location = new Point(lblOrigem.Right + 6, 86);
+        var linhaTags = new FlowLayoutPanel
+        {
+            Location = new Point(14, 86), MaximumSize = new Size(204, 0), AutoSize = true,
+            AutoSizeMode = AutoSizeMode.GrowAndShrink, WrapContents = true, BackColor = Color.Transparent
+        };
+        linhaTags.Controls.Add(lblOrigem);
+        linhaTags.Controls.Add(lblDistribuicao);
 
-        cardConjunto.Controls.AddRange(new Control[] { eyebrowConjunto, lblNumero, lblUnidade, lblOrigem, lblDistribuicao });
+        cardConjunto.Controls.AddRange(new Control[] { eyebrowConjunto, lblNumero, lblUnidade, linhaTags });
 
         var rodape = new Label
         {
@@ -176,7 +182,6 @@ public class FormPrincipal : Form
         barra.Controls.Add(eyebrow);
         barra.Controls.Add(titulo);
         barra.Controls.Add(cardConjunto);
-        barra.Controls.Add(rodape);
 
         return barra;
     }
@@ -215,7 +220,7 @@ public class FormPrincipal : Form
 
     private ItemEtapa CriarItemEtapa(int numero, string titulo, string subtitulo, Action aoClicar)
     {
-        var painel = new Panel { Size = new Size(232, 64), Cursor = Cursors.Hand, BackColor = Color.Transparent };
+        var painel = new Panel { Size = new Size(232, 72), Cursor = Cursors.Hand, BackColor = Color.Transparent };
         Tema.Arredondar(painel, 8);
 
         var circulo = new Label
@@ -238,7 +243,7 @@ public class FormPrincipal : Form
         var lblSubtitulo = new Label
         {
             Text = subtitulo, Font = Tema.FonteCorpo, ForeColor = Tema.TextoSecundario,
-            AutoSize = false, Size = new Size(176, 32), Location = new Point(46, 28), BackColor = Color.Transparent
+            AutoSize = true, MaximumSize = new Size(176, 0), Location = new Point(46, 28), BackColor = Color.Transparent
         };
 
         painel.Controls.AddRange(new Control[] { circulo, lblTitulo, lblSubtitulo });
